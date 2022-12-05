@@ -1,7 +1,10 @@
 use regex::Regex;
 
 fn main() {
-
+    part_01();
+}
+ 
+fn part_01() {
     let mut fully_contains_other: u16 = 0;
     let re = Regex::new("-|,").unwrap();
 
@@ -16,6 +19,5 @@ fn main() {
         }
     }
 
-    println!("No. of assignment pairs with fully diplicate (part 1): {}", fully_contains_other);
+    println!("No. of assignment pairs with fully duplicate (part 1): {}", fully_contains_other); 
 }
- 
