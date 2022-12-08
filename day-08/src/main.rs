@@ -1,6 +1,8 @@
 fn main() {
 
     let mut grid: Vec<Vec<usize>> = Vec::new();
+    let mut highest_scenic_scores: usize = usize::MIN;
+
     let file_lines = include_str!("../data/dataset.txt").split("\n");
 
     let mut row_len: usize = 0;
@@ -20,75 +22,71 @@ fn main() {
                 visible_trees += 1;
             } else {
                 let tree_height = grid[i][j];
-                let mut visible: bool = true;
+                
+                let mut visible_from_top: bool = true;
+                let mut visible_from_bottom: bool = true;
+                let mut visible_from_left: bool = true;
+                let mut visible_from_right: bool = true;
 
-                println!("tree_height: [{}] i = [{}] & j = [{}] | {}", tree_height, i, j, visible);
+                let mut visible_trees_from_top: usize = 0; 
+                let mut visible_trees_from_bottom: usize = 0; 
+                let mut visible_trees_from_left: usize = 0; 
+                let mut visible_trees_from_right: usize = 0; 
                 
                 for top in (0..i).rev() {
-                    println!("top: {} | {} >= {} | {}", top, grid[top][j], tree_height, visible);
-                    if grid[top][j] >= tree_height {
-                        visible = false;
-                        break;
+                    let tree_under_consideration: usize = grid[top][j];
+                    if visible_from_top && tree_under_consideration >= tree_height {
+                        visible_from_top = false;
+                        visible_trees_from_top += 1;
+                    } else if visible_from_top {
+                        visible_trees_from_top += 1;
                     }
                 }
-                if visible {
-                    visible_trees += 1;
-                    println!("Visible from top");
-                    println!("");
-                    continue;
-                }
 
-                visible = true;
                 for bottom in i+1..column_len {
-                    println!("bottom: {} | {} >= {} | {}", bottom, grid[bottom][j], tree_height, visible);
-                    if grid[bottom][j] >= tree_height {
-                        visible = false;
-                        break;
+                    let tree_under_consideration: usize = grid[bottom][j];
+                    if visible_from_bottom && tree_under_consideration >= tree_height {
+                        visible_from_bottom = false;
+                        visible_trees_from_bottom += 1;
+                    } else if visible_from_bottom {
+                        visible_trees_from_bottom += 1;
                     }
                 }
-                if visible {
-                    visible_trees += 1;
-                    println!("Visible from bottom");
-                    println!("");
-                    continue;
-                }
 
-                visible = true;
                 for left in (0..j).rev(){
-                    println!("left: {} | {} >= {} | {}", left, grid[i][left], tree_height, visible);
-                    if grid[i][left] >= tree_height {
-                        visible = false;
-                        break;
+                    let tree_under_consideration: usize = grid[i][left];
+                    if visible_from_left && tree_under_consideration >= tree_height {
+                        visible_from_left = false;
+                        visible_trees_from_left += 1;
+                    } else if visible_from_left {
+                        visible_trees_from_left += 1;
                     }
-                }
-                if visible {
-                    visible_trees += 1;
-                    println!("Visible from left");
-                    println!("");
-                    continue;
                 }
 
-                visible = true;
                 for right in j+1..row_len {
-                    println!("right: {} | {} >= {} | {}", right, grid[i][right], tree_height, visible);
-                    if grid[i][right] >= tree_height {
-                        visible = false;
-                        break;
+                    let tree_under_consideration: usize = grid[i][right];
+                    if visible_from_right && tree_under_consideration >= tree_height {
+                        visible_from_right = false;
+                        visible_trees_from_right += 1;
+                    } else if visible_from_right {
+                        visible_trees_from_right += 1;
                     }
                 }
-                if visible {
-                    visible_trees += 1;
-                    println!("Visible from right");
-                    println!("");
-                    continue;
+
+                let scenic_score_of_a_tree: usize = visible_trees_from_top * visible_trees_from_bottom * visible_trees_from_left * visible_trees_from_right;
+              
+                if scenic_score_of_a_tree > highest_scenic_scores {
+                    highest_scenic_scores = scenic_score_of_a_tree;
                 }
-                println!("Tree is not visible");
-                println!("=============================");
-                println!("");
+
+                if visible_from_top || visible_from_bottom || visible_from_left || visible_from_right {
+                    visible_trees += 1;
+                }
             }
         }
     } 
 
-    println!("Visible Trees: {}", visible_trees);
+    println!("Visible Trees (Part 1): {}", visible_trees);
+    println!("Highest Scenic Score (Part 2): {}", highest_scenic_scores);
 }
 
