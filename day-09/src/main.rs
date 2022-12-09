@@ -26,7 +26,7 @@ fn main() {
         }
     }
 
-    // println!("Part 1: # of positions the tail visited at least once: {}", visits);
+    println!("Part 1: # of positions the tail visited at least once: {}", visits);
 }
 
 fn walk(grid: &mut Vec<Vec<usize>>, head_position: &mut (usize, usize), tail_position: &mut (usize, usize), command: &str, steps: usize) {
