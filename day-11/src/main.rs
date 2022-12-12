@@ -65,9 +65,23 @@ pub fn main() {
             inspection: 0,
         }, 
     ];
+    
+    let mut monkeys2 = monkeys.clone();
 
-    let mut simulations: Vec<(usize, u64)> = Vec::new();
-    for _round in 0..20 {
+    let level = monkey_business_level(&mut monkeys, false);
+    println!("Part 1: The level of monkey business after 20 rounds: {:?}", level);
+    let level = monkey_business_level(&mut monkeys2, true);
+    println!("Part 2: The level of monkey business after 10000 rounds: {:?}", level);
+}
+
+fn monkey_business_level(monkeys: &mut Vec<Monkey>, round_two: bool) -> u128 {
+    let mut round_index = 20;
+    let least_common_multiple = monkeys.iter().map(|m| m.test).product::<u128>();
+    if round_two {
+        round_index = 10000;
+    }
+    let mut simulations: Vec<(usize, u128)> = Vec::new();
+    for _round in 0..round_index {
         for i_monkey in 0..monkeys.len() {
             simulations.clear();
             let monkey = monkeys.get_mut(i_monkey).unwrap();
@@ -75,16 +89,30 @@ pub fn main() {
                 monkey.inspection += 1;
                 match monkey.operation.0 {
                     1 => {
-                        *item += monkey.operation.1;
+                        if round_two {
+                            *item = item.wrapping_add(monkey.operation.1) % least_common_multiple;
+                        } else {
+                            *item = item.wrapping_add(monkey.operation.1);
+                        }
                     }
                     2 => {
-                        *item *= monkey.operation.1;
+                        if round_two {
+                            *item = item.wrapping_mul(monkey.operation.1) % least_common_multiple;
+                        } else {
+                            *item = item.wrapping_mul(monkey.operation.1);
+                        }
                     }
                     _ => {
-                        *item *= *item;
+                        if round_two {
+                            *item = item.wrapping_mul(*item) % least_common_multiple;
+                        } else {
+                            *item = item.wrapping_mul(*item);
+                        }
                     }
                 }
-                *item /= 3;
+                if !round_two {
+                    *item /= 3;
+                }
                 if *item % monkey.test == 0 {
                     simulations.push((monkey.target_monkey_1, *item));
                 } else {
@@ -101,23 +129,22 @@ pub fn main() {
     let mut top_2 = monkeys
         .iter()
         .map(|monkey| monkey.inspection)
-        .collect::<Vec<u32>>();
+        .collect::<Vec<u128>>();
     top_2.sort();
 
-    let monkey_business_level = top_2
+    top_2
         .iter()
         .rev()
         .take(2)
-        .product::<u32>();
-
-    println!("The level of monkey business after 20 rounds of stuff-slinging simian shenanigans: {:?}", monkey_business_level);
+        .product::<u128>()
 }
 
+#[derive(Clone)]
 struct Monkey {
-    items: Vec<u64>,
-    test: u64,
-    operation: (u8, u64),
+    items: Vec<u128>,
+    test: u128,
+    operation: (u8, u128),
     target_monkey_1: usize,
     target_monkey_2: usize,
-    inspection: u32,
+    inspection: u128,
 }
