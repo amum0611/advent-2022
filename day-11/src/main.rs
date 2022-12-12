@@ -66,7 +66,6 @@ pub fn main() {
         }, 
     ];
 
-    // simulate rounds
     let mut simulations: Vec<(usize, u64)> = Vec::new();
     for _round in 0..20 {
         for i_monkey in 0..monkeys.len() {
